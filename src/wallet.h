@@ -171,10 +171,10 @@ public:
     {
         return ::IsMine(*this, txout.scriptPubKey);
     }
-    int64 GetCredit(const CTxOut& txout) const
+    int64 GetCredits(const CTxOut& txout) const
     {
         if (!MoneyRange(txout.nValue))
-            throw std::runtime_error("CWallet::GetCredit() : value out of range");
+            throw std::runtime_error("CWallet::GetCredits() : value out of range");
         return (IsMine(txout) ? txout.nValue : 0);
     }
     bool IsChange(const CTxOut& txout) const;
@@ -208,16 +208,16 @@ public:
         }
         return nDebit;
     }
-    int64 GetCredit(const CTransaction& tx) const
+    int64 GetCredits(const CTransaction& tx) const
     {
-        int64 nCredit = 0;
+        int64 nCredits = 0;
         BOOST_FOREACH(const CTxOut& txout, tx.vout)
         {
-            nCredit += GetCredit(txout);
-            if (!MoneyRange(nCredit))
-                throw std::runtime_error("CWallet::GetCredit() : value out of range");
+            nCredits += GetCredits(txout);
+            if (!MoneyRange(nCredits))
+                throw std::runtime_error("CWallet::GetCredits() : value out of range");
         }
-        return nCredit;
+        return nCredits;
     }
     int64 GetChange(const CTransaction& tx) const
     {
@@ -327,12 +327,12 @@ public:
 
     // memory only
     mutable bool fDebitCached;
-    mutable bool fCreditCached;
-    mutable bool fAvailableCreditCached;
+    mutable bool fCreditsCached;
+    mutable bool fAvailableCreditsCached;
     mutable bool fChangeCached;
     mutable int64 nDebitCached;
-    mutable int64 nCreditCached;
-    mutable int64 nAvailableCreditCached;
+    mutable int64 nCreditsCached;
+    mutable int64 nAvailableCreditsCached;
     mutable int64 nChangeCached;
 
     CWalletTx()
@@ -367,12 +367,12 @@ public:
         strFromAccount.clear();
         vfSpent.clear();
         fDebitCached = false;
-        fCreditCached = false;
-        fAvailableCreditCached = false;
+        fCreditsCached = false;
+        fAvailableCreditsCached = false;
         fChangeCached = false;
         nDebitCached = 0;
-        nCreditCached = 0;
-        nAvailableCreditCached = 0;
+        nCreditsCached = 0;
+        nAvailableCreditsCached = 0;
         nChangeCached = 0;
     }
 
@@ -436,7 +436,7 @@ public:
             {
                 vfSpent[i] = true;
                 fReturn = true;
-                fAvailableCreditCached = false;
+                fAvailableCreditsCached = false;
             }
         }
         return fReturn;
@@ -445,8 +445,8 @@ public:
     // make sure balances are recalculated
     void MarkDirty()
     {
-        fCreditCached = false;
-        fAvailableCreditCached = false;
+        fCreditsCached = false;
+        fAvailableCreditsCached = false;
         fDebitCached = false;
         fChangeCached = false;
     }
@@ -465,7 +465,7 @@ public:
         if (!vfSpent[nOut])
         {
             vfSpent[nOut] = true;
-            fAvailableCreditCached = false;
+            fAvailableCreditsCached = false;
         }
     }
 
@@ -489,44 +489,44 @@ public:
         return nDebitCached;
     }
 
-    int64 GetCredit(bool fUseCache=true) const
+    int64 GetCredits(bool fUseCache=true) const
     {
         // Must wait until coinbase is safely deep enough in the chain before valuing it
         if (IsCoinBase() && GetBlocksToMaturity() > 0)
             return 0;
 
         // GetBalance can assume transactions in mapWallet won't change
-        if (fUseCache && fCreditCached)
-            return nCreditCached;
-        nCreditCached = pwallet->GetCredit(*this);
-        fCreditCached = true;
-        return nCreditCached;
+        if (fUseCache && fCreditsCached)
+            return nCreditsCached;
+        nCreditsCached = pwallet->GetCredits(*this);
+        fCreditsCached = true;
+        return nCreditsCached;
     }
 
-    int64 GetAvailableCredit(bool fUseCache=true) const
+    int64 GetAvailableCredits(bool fUseCache=true) const
     {
         // Must wait until coinbase is safely deep enough in the chain before valuing it
         if (IsCoinBase() && GetBlocksToMaturity() > 0)
             return 0;
 
-        if (fUseCache && fAvailableCreditCached)
-            return nAvailableCreditCached;
+        if (fUseCache && fAvailableCreditsCached)
+            return nAvailableCreditsCached;
 
-        int64 nCredit = 0;
+        int64 nCredits = 0;
         for (unsigned int i = 0; i < vout.size(); i++)
         {
             if (!IsSpent(i))
             {
                 const CTxOut &txout = vout[i];
-                nCredit += pwallet->GetCredit(txout);
-                if (!MoneyRange(nCredit))
-                    throw std::runtime_error("CWalletTx::GetAvailableCredit() : value out of range");
+                nCredits += pwallet->GetCredits(txout);
+                if (!MoneyRange(nCredits))
+                    throw std::runtime_error("CWalletTx::GetAvailableCredits() : value out of range");
             }
         }
 
-        nAvailableCreditCached = nCredit;
-        fAvailableCreditCached = true;
-        return nCredit;
+        nAvailableCreditsCached = nCredits;
+        fAvailableCreditsCached = true;
+        return nCredits;
     }
 
 
@@ -704,7 +704,7 @@ class CAccountingEntry
 {
 public:
     std::string strAccount;
-    int64 nCreditDebit;
+    int64 nCreditsDebit;
     int64 nTime;
     std::string strOtherAccount;
     std::string strComment;
@@ -716,7 +716,7 @@ public:
 
     void SetNull()
     {
-        nCreditDebit = 0;
+        nCreditsDebit = 0;
         nTime = 0;
         strAccount.clear();
         strOtherAccount.clear();
@@ -728,7 +728,7 @@ public:
         if (!(nType & SER_GETHASH))
             READWRITE(nVersion);
         // Note: strAccount is serialized as part of the key, not here.
-        READWRITE(nCreditDebit);
+        READWRITE(nCreditsDebit);
         READWRITE(nTime);
         READWRITE(strOtherAccount);
         READWRITE(strComment);

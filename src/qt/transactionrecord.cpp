@@ -35,16 +35,16 @@ QList<TransactionRecord> TransactionRecord::decomposeTransaction(const CWallet *
 {
     QList<TransactionRecord> parts;
     int64 nTime = wtx.GetTxTime();
-    int64 nCredit = wtx.GetCredit(true);
+    int64 nCredits = wtx.GetCredits(true);
     int64 nDebit = wtx.GetDebit();
-    int64 nNet = nCredit - nDebit;
+    int64 nNet = nCredits - nDebit;
     uint256 hash = wtx.GetHash();
     std::map<std::string, std::string> mapValue = wtx.mapValue;
 
     if (nNet > 0 || wtx.IsCoinBase())
     {
         //
-        // Credit
+        // Credits
         //
         BOOST_FOREACH(const CTxOut& txout, wtx.vout)
         {
@@ -53,7 +53,7 @@ QList<TransactionRecord> TransactionRecord::decomposeTransaction(const CWallet *
                 TransactionRecord sub(hash, nTime);
                 CTxDestination address;
                 sub.idx = parts.size(); // sequence number
-                sub.credit = txout.nValue;
+                sub.Credits = txout.nValue;
                 if (wtx.IsCoinBase())
                 {
                     // Generated
@@ -92,7 +92,7 @@ QList<TransactionRecord> TransactionRecord::decomposeTransaction(const CWallet *
             int64 nChange = wtx.GetChange();
 
             parts.append(TransactionRecord(hash, nTime, TransactionRecord::SendToSelf, "",
-                            -(nDebit - nChange), nCredit - nChange));
+                            -(nDebit - nChange), nCredits - nChange));
         }
         else if (fAllFromMe)
         {
@@ -204,8 +204,8 @@ void TransactionRecord::updateStatus(const CWalletTx &wtx)
     // For generated transactions, determine maturity
     if(type == TransactionRecord::Generated)
     {
-        int64 nCredit = wtx.GetCredit(true);
-        if (nCredit == 0)
+        int64 nCredits = wtx.GetCredits(true);
+        if (nCredits == 0)
         {
             status.maturity = TransactionStatus::Immature;
 

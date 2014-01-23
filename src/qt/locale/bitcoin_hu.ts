@@ -1504,7 +1504,7 @@ Cím: %4
         <location filename="../transactiondesc.cpp" line="150"/>
         <location filename="../transactiondesc.cpp" line="195"/>
         <location filename="../transactiondesc.cpp" line="212"/>
-        <source>&lt;b&gt;Credit:&lt;/b&gt; </source>
+        <source>&lt;b&gt;Credits:&lt;/b&gt; </source>
         <translation>&lt;b&gt;Jóváírás&lt;/b&gt; </translation>
     </message>
     <message>

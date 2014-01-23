@@ -1,4 +1,4 @@
-Credit - a fork of Litecoin version with random bonus blocks. Like Litecoin it uses scrypt as a proof of work scheme.
+Credits - a fork of Litecoin version with random bonus blocks. Like Litecoin it uses scrypt as a proof of work scheme.
 
 Algo: Scrypt
 Total Blocks: 10,010,010

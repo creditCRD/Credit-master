@@ -48,25 +48,25 @@ bool CWalletDB::WriteAccountingEntry(const CAccountingEntry& acentry)
     return Write(boost::make_tuple(string("acentry"), acentry.strAccount, ++nAccountingEntryNumber), acentry);
 }
 
-int64 CWalletDB::GetAccountCreditDebit(const string& strAccount)
+int64 CWalletDB::GetAccountCreditsDebit(const string& strAccount)
 {
     list<CAccountingEntry> entries;
-    ListAccountCreditDebit(strAccount, entries);
+    ListAccountCreditsDebit(strAccount, entries);
 
-    int64 nCreditDebit = 0;
+    int64 nCreditsDebit = 0;
     BOOST_FOREACH (const CAccountingEntry& entry, entries)
-        nCreditDebit += entry.nCreditDebit;
+        nCreditsDebit += entry.nCreditsDebit;
 
-    return nCreditDebit;
+    return nCreditsDebit;
 }
 
-void CWalletDB::ListAccountCreditDebit(const string& strAccount, list<CAccountingEntry>& entries)
+void CWalletDB::ListAccountCreditsDebit(const string& strAccount, list<CAccountingEntry>& entries)
 {
     bool fAllAccounts = (strAccount == "*");
 
     Dbc* pcursor = GetCursor();
     if (!pcursor)
-        throw runtime_error("CWalletDB::ListAccountCreditDebit() : cannot create DB cursor");
+        throw runtime_error("CWalletDB::ListAccountCreditsDebit() : cannot create DB cursor");
     unsigned int fFlags = DB_SET_RANGE;
     loop
     {
@@ -82,7 +82,7 @@ void CWalletDB::ListAccountCreditDebit(const string& strAccount, list<CAccountin
         else if (ret != 0)
         {
             pcursor->close();
-            throw runtime_error("CWalletDB::ListAccountCreditDebit() : error scanning DB");
+            throw runtime_error("CWalletDB::ListAccountCreditsDebit() : error scanning DB");
         }
 
         // Unserialize

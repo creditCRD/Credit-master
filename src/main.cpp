@@ -1,7 +1,7 @@
 // Copyright (c) 2009-2010 Satoshi Nakamoto
 // Copyright (c) 2009-2012 The Bitcoin developers
 // Copyright (c) 2011-2012 Litecoin Developers
-// Copyright (c) 2013-2014 Credit Developers
+// Copyright (c) 2013-2014 Credits Developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -35,7 +35,7 @@ map<uint256, CBlockIndex*> mapBlockIndex;
 
 //uint256 hashGenesisBlock("0x04379e5c8958ac73c112da1b1fd36b21c90744c7801e5fbb3886002109ac5fc0");
 uint256 hashGenesisBlock("0x3162f0d2327e82b1f68a66258357bde7618a6a6ac68b7bd898a44fd4a19e34b6");
-static CBigNum bnProofOfWorkLimit(~uint256(0) >> 20); // Credit: starting difficulty is 1 / 2^12
+static CBigNum bnProofOfWorkLimit(~uint256(0) >> 20); // Credits: starting difficulty is 1 / 2^12
 CBlockIndex* pindexGenesisBlock = NULL;
 int nBestHeight = -1;
 CBigNum bnBestChainWork = 0;
@@ -55,7 +55,7 @@ map<uint256, map<uint256, CDataStream*> > mapOrphanTransactionsByPrev;
 // Constant stuff for coinbase transactions we create:
 CScript COINBASE_FLAGS;
 
-const string strMessageMagic = "Credit Signed Message:\n";
+const string strMessageMagic = "Credits Signed Message:\n";
 
 double dHashesPerSec;
 int64 nHPSTimerStart;
@@ -865,7 +865,7 @@ int64 static GetBlockValue(int nHeight, int64 nFees, uint256 prevHash)
     else
     {
         // Subsidy is cut in half every 1,036,800 blocks, which will occur approximately every 2 years
-        nSubsidy >>= (nHeight / 1036800); // Credit: 1036.8K blocks in ~2 years
+        nSubsidy >>= (nHeight / 1036800); // Credits: 1036.8K blocks in ~2 years
 
         std::string cseed_str = prevHash.ToString().substr(8,7);
 		const char* cseed = cseed_str.c_str();
@@ -886,8 +886,8 @@ int64 static GetBlockValue(int nHeight, int64 nFees, uint256 prevHash)
 
 
 
-static const int64 nTargetTimespan = 1 * 60 * 60; // Credit: every 1 hour
-static const int64 nTargetSpacing = 30; // Credit: 30 seconds
+static const int64 nTargetTimespan = 1 * 60 * 60; // Credits: every 1 hour
+static const int64 nTargetSpacing = 30; // Credits: 30 seconds
 static const int64 nInterval = nTargetTimespan / nTargetSpacing;
 
 //
@@ -946,7 +946,7 @@ unsigned int static GetNextWorkRequired(const CBlockIndex* pindexLast, const CBl
         return pindexLast->nBits;
     }
 
-    // Credit: This fixes an issue where a 51% attack can change difficulty at will.
+    // Credits: This fixes an issue where a 51% attack can change difficulty at will.
     // Go back the full period unless it's the first retarget after genesis. Code courtesy of Art Forz
     int blockstogoback = nInterval-1;
     if ((pindexLast->nHeight+1) != nInterval)
@@ -1236,7 +1236,7 @@ bool CTransaction::ConnectInputs(MapPrevTx inputs,
 {
     // Take over previous transactions' spent pointers
     // fBlock is true when this is called from AcceptBlock when a new best-block is added to the blockchain
-    // fMiner is true when called from the internal Credit miner
+    // fMiner is true when called from the internal Credits miner
     // ... both are false when called from CTransaction::AcceptToMemoryPool
     if (!IsCoinBase())
     {
@@ -1989,7 +1989,7 @@ bool CheckDiskSpace(uint64 nAdditionalBytes)
         string strMessage = _("Warning: Disk space is low");
         strMiscWarning = strMessage;
         printf("*** %s\n", strMessage.c_str());
-        uiInterface.ThreadSafeMessageBox(strMessage, "Credit", CClientUIInterface::OK | CClientUIInterface::ICON_EXCLAMATION | CClientUIInterface::MODAL);
+        uiInterface.ThreadSafeMessageBox(strMessage, "Credits", CClientUIInterface::OK | CClientUIInterface::ICON_EXCLAMATION | CClientUIInterface::MODAL);
         StartShutdown();
         return false;
     }
@@ -2453,7 +2453,7 @@ bool static AlreadyHave(CTxDB& txdb, const CInv& inv)
 // The message start string is designed to be unlikely to occur in normal data.
 // The characters are rarely used upper ascii, not valid as UTF-8, and produce
 // a large 4-byte int at any alignment.
-unsigned char pchMessageStart[4] = { 0xfb, 0xc0, 0xb6, 0xdb }; // Credit: increase each by adding 2 to bitcoin's value.
+unsigned char pchMessageStart[4] = { 0xfb, 0xc0, 0xb6, 0xdb }; // Credits: increase each by adding 2 to bitcoin's value.
 
 
 bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv)
@@ -3541,7 +3541,7 @@ CBlock* CreateNewBlock(CReserveKey& reservekey)
                 continue;
 
             // Transaction fee required depends on block size
-            // Creditd: Reduce the exempted free transactions to 500 bytes (from Bitcoin's 3000 bytes)
+            // Creditsd: Reduce the exempted free transactions to 500 bytes (from Bitcoin's 3000 bytes)
             bool fAllowFree = (nBlockSize + nTxSize < 1500 || CTransaction::AllowFree(dPriority));
             int64 nMinFee = tx.GetMinFee(nBlockSize, fAllowFree, GMF_BLOCK);
 

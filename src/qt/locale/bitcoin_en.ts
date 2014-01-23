@@ -1321,7 +1321,7 @@ Address: %4
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Credit</source>
+        <source>Credits</source>
         <translation type="unfinished"></translation>
     </message>
     <message numerus="yes">
