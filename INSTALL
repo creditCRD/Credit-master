@@ -1,0 +1,9 @@
+Building Credit
+
+See doc/readme-qt.rst for instructions on building Credit-QT,
+the intended-for-end-users, nice-graphical-interface, reference
+implementation of Junkcoin.
+
+See doc/build-*.txt for instructions on building Creditd,
+the intended-for-services, no-graphical-interface, reference
+implementation of Credit.
